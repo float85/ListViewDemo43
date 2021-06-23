@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">DemoAndroid43</string>
+    <string name="app_name">ListViewDemo43</string>
+
+    <string name="tv_name_number">Nội dung số</string>
+    <string name="bottom_save">Save</string>
+
 </resources>
