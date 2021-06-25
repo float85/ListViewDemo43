@@ -6,9 +6,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +22,9 @@ public class MainActivity extends AppCompatActivity {
     List<ContactBook> contactBookList;
 
     View btnAdd;
+    int _position;
+    AdapterContactBook adapterContactBook;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         contactBookList.add(contactBook3);
         contactBookList.add(contactBook4);
 
-        AdapterContactBook adapterContactBook = new AdapterContactBook(contactBookList);
+        adapterContactBook = new AdapterContactBook(contactBookList);
         lvContact.setAdapter(adapterContactBook);
 
         btnAdd.setOnClickListener(new View.OnClickListener() {
@@ -55,24 +60,40 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, 113);
             }
         });
+
+
+        //câu lệnh bắt sự kiện click trên adapter
+        lvContact.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                ContactBook contactBook = contactBookList.get(position);
+                _position = position;
+
+                Intent intent = new Intent(getBaseContext(), AddContactActivity.class);
+                intent.putExtra("number", 904);
+                startActivityForResult(intent, 115);
+
+            }
+        });
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        String name = data.getStringExtra("key_name");
+        String address = data.getStringExtra("key_address");
         switch (resultCode) {
             case RESULT_OK:
                 if (requestCode == 113) {
-                    String name = data.getStringExtra("key_name");
-                    String address = data.getStringExtra("key_address");
-
                     ContactBook contactBook = new ContactBook(name, address, 7781 + "", true);
                     contactBookList.add(contactBook);
-
-                    lvContact.notifyAll();
+                    adapterContactBook.notifyDataSetChanged();
+                } else if (requestCode == 115) {
+                    contactBookList.set(_position, new ContactBook(name, address, "", true));
+                    adapterContactBook.notifyDataSetChanged();
                 }
-
                 break;
         }
     }
